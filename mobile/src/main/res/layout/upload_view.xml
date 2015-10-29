@@ -16,34 +16,10 @@
         android:padding="16dp">
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/uploadButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Bluetooth"/>
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="UploadFile"/>
-
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Twitter"/>
-
-        <Button
-            android:id="@+id/button4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="AudioAnalize"/>
-
-        <Button
-            android:id="@+id/button5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Streaming"/>
+            android:text="Upload"/>
 
     </LinearLayout>
 
