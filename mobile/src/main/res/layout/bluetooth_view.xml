@@ -21,6 +21,12 @@
             android:layout_height="wrap_content"
             android:text="searchDevice"/>
 
+        <Button
+            android:id="@+id/scanDeviceButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="scanDevice"/>
+
         <ListView
             android:id="@+id/deviceList"
             android:layout_width="match_parent"
