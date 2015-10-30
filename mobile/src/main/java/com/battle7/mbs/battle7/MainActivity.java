@@ -1,6 +1,7 @@
 package com.battle7.mbs.battle7;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,7 +12,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
+    private static int REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +37,23 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        requestPermission();
+    }
+
+    private void requestPermission(){
+        if(Build.VERSION.SDK_INT >= 23) {
+            ArrayList<String> permissions = ApplicationHelper.getSettingPermissions(this);
+            boolean isRequestPermission = false;
+            for(String permission : permissions){
+                if(!ApplicationHelper.hasSelfPermission(this, permission)){
+                    isRequestPermission = true;
+                    break;
+                }
+            }
+            if(isRequestPermission) {
+                requestPermissions(permissions.toArray(new String[0]), REQUEST_CODE);
+            }
+        }
     }
 
     @Override
