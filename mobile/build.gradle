@@ -30,4 +30,7 @@ dependencies {
     compile files('/workspace/java_workspace/battle7/app/libs/volley.jar')
     compile files('/workspace/java_workspace/battle7/app/libs/google-play-services.jar')
     compile files('/workspace/java_workspace/battle7/app/libs/gson-2.4.jar')
+    compile files('/workspace/java_workspace/battle7/app/libs/engine.io-client-0.6.2.jar')
+    compile files('/workspace/java_workspace/battle7/app/libs/Java-WebSocket-1.3.0.jar')
+    compile files('/workspace/java_workspace/battle7/app/libs/socket.io-client-0.6.2.jar')
 }
