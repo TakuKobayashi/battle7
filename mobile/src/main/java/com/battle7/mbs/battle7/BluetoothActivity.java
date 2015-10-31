@@ -44,7 +44,6 @@ public class BluetoothActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bluetooth_view);
-        SocketIOStreamer.getInstance(SocketIOStreamer.class).connect();
 
         deviceList = new ArrayList<BluetoothDevice>();
         mDeviceAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
