@@ -42,18 +42,19 @@ public class BluetoothServerThread extends ContextSingletonBase<BluetoothServerT
             @Override
             public void run() {
                 while (bIsServerActive) {
+                    Log.d(Config.TAG, "startServer");
                     try {
                         // This is a blocking call and will only return on a
                         // successful connection or an exception
                         mSocket = mServerSocket.accept();
                     } catch (IOException e) {
                         Log.e(Config.TAG, "accept() failed", e);
-                        setupBluetoothServer();
-                        bIsServerActive = false;
                     }
+                    Log.d(Config.TAG, "socket:" + mSocket);
 
                     // If a connection was accepted
                     if (mSocket != null) {
+                        Log.d(Config.TAG, "connect");
                         socketConnection();
                         try {
                             //処理が完了したソケットは閉じる。

@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Debug;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -15,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -86,12 +88,50 @@ public class BluetoothActivity extends AppCompatActivity {
             }
         });
 
+        BluetoothClientThread.getInstance(BluetoothClientThread.class).setOnClientCallback(new BluetoothClientThread.ClientReceiveCallback() {
+            @Override
+            public void onTryConnection() {
+                Log.d(Config.TAG, "client tryConnection");
+            }
+
+            @Override
+            public void onConnectionSuccess() {
+                Log.d(Config.TAG, "client tryConnection");
+                BluetoothClientThread.getInstance(BluetoothClientThread.class).sendData("testest".getBytes());
+            }
+
+            @Override
+            public void onReceive(int bytes, byte[] data) {
+                String st = null;
+                try {
+                    st = new String(data, "UTF-8");
+                    Log.d(Config.TAG, "bytes:" + bytes + " st:" + st);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                    Log.d(Config.TAG, "bytes:" + bytes + " error:" + e.getMessage());
+                }
+            }
+
+            @Override
+            public void onSend(byte[] data) {
+                String st = null;
+                try {
+                    st = new String(data, "UTF-8");
+                    Log.d(Config.TAG, "st:" + st);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                    Log.d(Config.TAG, "error:" + e.getMessage());
+                }
+            }
+        });
+
         ListView deviceListView = (ListView) findViewById(R.id.deviceList);
         deviceListView.setAdapter(mDeviceAdapter);
         deviceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View child, int position, long id) {
                 Log.d(Config.TAG, deviceList.get(position).getName() + " : " + deviceList.get(position).getAddress());
+                BluetoothClientThread.getInstance(BluetoothClientThread.class).startConnection(deviceList.get(position));
             }
         });
 
