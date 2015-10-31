@@ -16,9 +16,20 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class BluetoothActivity extends AppCompatActivity {
 
@@ -27,6 +38,7 @@ public class BluetoothActivity extends AppCompatActivity {
     private ArrayAdapter mDeviceAdapter;
     private BluetoothBroadcastReceiver mReceiver;
     private String st = null;
+    private RequestQueue mQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +122,6 @@ public class BluetoothActivity extends AppCompatActivity {
 
             @Override
             public void onReceive(int bytes, byte[] data) {
-                Log.d(Config.TAG, "server bytes:" + bytes + " dt:" + data);
                 try {
                     st = new String(data, "UTF-8");
                     Log.d(Config.TAG, "server bytes:" + bytes + " st:" + st);
@@ -155,10 +166,10 @@ public class BluetoothActivity extends AppCompatActivity {
                 String st = null;
                 try {
                     st = new String(data, "UTF-8");
-                    Log.d(Config.TAG, "bytes:" + bytes + " st:" + st);
+                    Log.d(Config.TAG, "client bytes:" + bytes + " st:" + st);
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
-                    Log.d(Config.TAG, "bytes:" + bytes + " error:" + e.getMessage());
+                    Log.d(Config.TAG, "client bytes:" + bytes + " error:" + e.getMessage());
                 }
             }
 
@@ -203,6 +214,19 @@ public class BluetoothActivity extends AppCompatActivity {
         }else{
             scan.setVisibility(View.INVISIBLE);
         }
+        mQueue = Volley.newRequestQueue(this);
+
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("userId", UUID.randomUUID().toString());
+        params.put("timestamp", String.valueOf(System.currentTimeMillis()));
+        params.put("length", "1");
+        params.put("total", "3");
+        httpRequest(Request.Method.POST, Config.ROOT_URL + "score?" + ApplicationHelper.makeUrlParams(params), null, new Response.Listener() {
+            @Override
+            public void onResponse(Object o) {
+                Log.d(Config.TAG, "sucess:" + o.toString());
+            }
+        });
     }
 
     @Override
@@ -244,5 +268,21 @@ public class BluetoothActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void httpRequest(int method, String url , final Map<String, String> params, Response.Listener response){
+        StringRequest request = new StringRequest(method ,url, response, new Response.ErrorListener(){
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                Log.d(Config.TAG, "error:" + error.getMessage());
+            }
+        }) {
+            @Override
+            protected Map<String,String> getParams(){
+                return params;
+            }
+        };
+        mQueue.add(request);
     }
 }
