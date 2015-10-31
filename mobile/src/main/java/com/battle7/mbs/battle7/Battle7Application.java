@@ -1,6 +1,9 @@
 package com.battle7.mbs.battle7;
 
 import android.app.Application;
+import android.util.Log;
+
+import java.io.UnsupportedEncodingException;
 
 public class Battle7Application extends Application {
 	@Override

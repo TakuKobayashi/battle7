@@ -27,6 +27,12 @@
             android:layout_height="wrap_content"
             android:text="scanDevice"/>
 
+        <Button
+            android:id="@+id/sendDataButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="sendData"/>
+
         <ListView
             android:id="@+id/deviceList"
             android:layout_width="match_parent"

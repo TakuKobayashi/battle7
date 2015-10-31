@@ -50,6 +50,7 @@ public class BluetoothServerThread extends ContextSingletonBase<BluetoothServerT
                     } catch (IOException e) {
                         Log.e(Config.TAG, "accept() failed", e);
                     }
+                    if(mCallback != null) mCallback.onTryConnection();
                     Log.d(Config.TAG, "socket:" + mSocket);
 
                     // If a connection was accepted
@@ -76,26 +77,27 @@ public class BluetoothServerThread extends ContextSingletonBase<BluetoothServerT
         try {
             mSocketIS = mSocket.getInputStream();
             mSocketOS = mSocket.getOutputStream();
+            if(mCallback != null) mCallback.onConnectionSuccess();
         } catch (IOException e) {
             Log.e(Config.TAG, "temp sockets not created", e);
         }
+
         // 録音スレッド
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (bIsConnectionActive) {
                     byte[] buffer = new byte[1024];
-                    int bytes;
+                    int bytes = 0;
                     try {
                         // Read from the InputStream
                         bytes = mSocketIS.read(buffer);
-                        Log.d(Config.TAG, "bytes:" + bytes);
-                        if(mCallback != null) mCallback.onReceive(bytes, buffer);
                     } catch (IOException e) {
                         Log.d(Config.TAG, "disconnected:" + e.getMessage());
-                        setupBluetoothServer();
-                        startServer();
-                        bIsConnectionActive = false;
+                    }
+                    Log.d(Config.TAG, "bytes:" + bytes);
+                    if(bytes > 0) {
+                        if (mCallback != null) mCallback.onReceive(bytes, buffer);
                     }
                 }
             }
@@ -149,7 +151,8 @@ public class BluetoothServerThread extends ContextSingletonBase<BluetoothServerT
     }
 
     public interface ServerReceiveCallback{
-        public void onConnection();
+        public void onTryConnection();
+        public void onConnectionSuccess();
         public void onReceive(int bytes, byte[] data);
         public void onSend(byte[] data);
     }

@@ -26,6 +26,7 @@ public class BluetoothActivity extends AppCompatActivity {
     private ArrayList<BluetoothDevice> deviceList;
     private ArrayAdapter mDeviceAdapter;
     private BluetoothBroadcastReceiver mReceiver;
+    private String st = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +89,56 @@ public class BluetoothActivity extends AppCompatActivity {
             }
         });
 
+        Button sendDataButton = (Button) findViewById(R.id.sendDataButton);
+        sendDataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BluetoothClientThread.getInstance(BluetoothClientThread.class).sendData("testest".getBytes());
+            }
+        });
+
+        BluetoothServerThread.getInstance(BluetoothServerThread.class).setOnAudioRecordCallback(new BluetoothServerThread.ServerReceiveCallback() {
+            @Override
+            public void onTryConnection() {
+                Log.d(Config.TAG, "server tryConnection");
+            }
+
+            @Override
+            public void onConnectionSuccess() {
+                Log.d(Config.TAG, "server Connection sucess");
+            }
+
+            @Override
+            public void onReceive(int bytes, byte[] data) {
+                Log.d(Config.TAG, "server bytes:" + bytes + " dt:" + data);
+                try {
+                    st = new String(data, "UTF-8");
+                    Log.d(Config.TAG, "server bytes:" + bytes + " st:" + st);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                    Log.d(Config.TAG, "server bytes:" + bytes + " error:" + e.getMessage());
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ApplicationHelper.showToast(BluetoothActivity.this, "st:" + st);
+                    }
+                });
+            }
+
+            @Override
+            public void onSend(byte[] data) {
+                String st = null;
+                try {
+                    st = new String(data, "UTF-8");
+                    Log.d(Config.TAG, "server st:" + st);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                    Log.d(Config.TAG, "server error:" + e.getMessage());
+                }
+            }
+        });
+
         BluetoothClientThread.getInstance(BluetoothClientThread.class).setOnClientCallback(new BluetoothClientThread.ClientReceiveCallback() {
             @Override
             public void onTryConnection() {
@@ -96,8 +147,7 @@ public class BluetoothActivity extends AppCompatActivity {
 
             @Override
             public void onConnectionSuccess() {
-                Log.d(Config.TAG, "client tryConnection");
-                BluetoothClientThread.getInstance(BluetoothClientThread.class).sendData("testest".getBytes());
+                Log.d(Config.TAG, "client connection success");
             }
 
             @Override
@@ -131,6 +181,10 @@ public class BluetoothActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View child, int position, long id) {
                 Log.d(Config.TAG, deviceList.get(position).getName() + " : " + deviceList.get(position).getAddress());
+                if (mBluetoothAdapter.isDiscovering()) {
+                    //検索中の場合は検出をキャンセルする
+                    mBluetoothAdapter.cancelDiscovery();
+                }
                 BluetoothClientThread.getInstance(BluetoothClientThread.class).startConnection(deviceList.get(position));
             }
         });

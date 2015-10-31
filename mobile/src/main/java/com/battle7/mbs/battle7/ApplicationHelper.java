@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.Surface;
 import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -132,5 +133,10 @@ public class ApplicationHelper {
 	public static boolean hasSelfPermission(Context context, String permission) {
 		if(Build.VERSION.SDK_INT < 23) return true;
 		return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+	}
+
+	public static void showToast(Context con, String message) {
+		Toast toast = Toast.makeText(con, message, Toast.LENGTH_LONG);
+		toast.show();
 	}
 }
