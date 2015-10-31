@@ -35,4 +35,8 @@ dependencies {
     compile files('/workspace/java_workspace/battle7/app/libs/socket.io-client-0.6.2.jar')
     compile files('/workspace/java_workspace/battle7/app/libs/engine.io-client-0.5.1.jar')
     compile files('/workspace/java_workspace/battle7/app/libs/socket.io-client-0.5.1.jar')
+    compile files('/workspace/java_workspace/battle7/app/libs/CrashlyticsPlugin.jar')
+    compile files('/workspace/java_workspace/battle7/app/libs/felix.jar')
+    compile files('/workspace/java_workspace/battle7/app/libs/slf4j-api-1.7.2.jar')
+    compile files('/workspace/java_workspace/battle7/app/libs/slf4j-jdk14-1.7.2.jar')
 }
