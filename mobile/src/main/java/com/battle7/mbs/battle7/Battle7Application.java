@@ -6,10 +6,13 @@ public class Battle7Application extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		BluetoothServerThread.getInstance(BluetoothServerThread.class).init(this);
+		BluetoothServerThread.getInstance(BluetoothServerThread.class).startServer();
 	}
 
 	@Override
 	public void onTerminate() {
 		super.onTerminate();
+		BluetoothServerThread.getInstance(BluetoothServerThread.class).stopServer();
 	}
 }
