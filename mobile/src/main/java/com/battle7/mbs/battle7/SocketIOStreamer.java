@@ -7,9 +7,13 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.socket.client.Socket;
-import io.socket.client.IO;
-import io.socket.emitter.Emitter;
+//import io.socket.client.Socket;
+//import io.socket.client.IO;
+//import io.socket.emitter.Emitter;
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
+import com.github.nkzawa.engineio.client.transports.WebSocket;
 
 public class SocketIOStreamer extends ContextSingletonBase<SocketIOStreamer> {
     private SocketIOEventCallback mCallback;
