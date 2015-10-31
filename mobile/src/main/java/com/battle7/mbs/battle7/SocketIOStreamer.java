@@ -14,6 +14,7 @@ import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.github.nkzawa.engineio.client.transports.WebSocket;
+import com.google.gson.Gson;
 
 public class SocketIOStreamer extends ContextSingletonBase<SocketIOStreamer> {
     private SocketIOEventCallback mCallback;
@@ -66,6 +67,17 @@ public class SocketIOStreamer extends ContextSingletonBase<SocketIOStreamer> {
                     Log.d(Config.TAG, "discomment!!");
                     for (Object o : arg0) {
                         Log.d(Config.TAG, "discomment:" + o.toString());
+                    }
+                }
+            });
+            mSocket.on("tweetInfo", new Emitter.Listener() {
+                @Override
+                public void call(Object... arg0) {
+                    Log.d(Config.TAG, "tweetInfo");
+                    Gson gson = new Gson();
+                    for(Object o : arg0){
+                        TwitterInfo twitterInfo = gson.fromJson(o.toString(), TwitterInfo.class);
+                        Log.d(Config.TAG, "tweetInfo:" + o.toString());
                     }
                 }
             });
