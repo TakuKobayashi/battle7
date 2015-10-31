@@ -28,4 +28,6 @@ dependencies {
     compile files('/Users/taku/workspace/workspace_java/battle7/app/libs/google-play-services.jar')
     compile files('/Users/taku/workspace/workspace_java/battle7/app/libs/volley.jar')
     compile files('/workspace/java_workspace/battle7/app/libs/volley.jar')
+    compile files('/workspace/java_workspace/battle7/app/libs/google-play-services.jar')
+    compile files('/workspace/java_workspace/battle7/app/libs/gson-2.4.jar')
 }
