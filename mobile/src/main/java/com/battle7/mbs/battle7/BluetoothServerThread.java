@@ -28,6 +28,7 @@ public class BluetoothServerThread extends ContextSingletonBase<BluetoothServerT
 
     private void setupBluetoothServer(){
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        adapter.enable();
         try {
             mServerSocket = adapter.listenUsingRfcommWithServiceRecord(adapter.getName(), sppUuid);
         } catch (IOException e) {
@@ -36,6 +37,7 @@ public class BluetoothServerThread extends ContextSingletonBase<BluetoothServerT
     }
 
     public void startServer() {
+        if(mServerSocket == null) return;
         bIsServerActive = true;
         // 録音スレッド
         Thread thread = new Thread(new Runnable() {

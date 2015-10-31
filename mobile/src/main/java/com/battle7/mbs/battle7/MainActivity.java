@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         BluetoothServerThread.getInstance(BluetoothServerThread.class).stopServer();
+        SocketIOStreamer.getInstance(SocketIOStreamer.class).disConnect();
     }
 
     @Override

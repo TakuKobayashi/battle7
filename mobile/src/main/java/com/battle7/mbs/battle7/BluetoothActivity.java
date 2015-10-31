@@ -44,6 +44,7 @@ public class BluetoothActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bluetooth_view);
+        SocketIOStreamer.getInstance(SocketIOStreamer.class).connect();
 
         deviceList = new ArrayList<BluetoothDevice>();
         mDeviceAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
@@ -225,6 +226,17 @@ public class BluetoothActivity extends AppCompatActivity {
             @Override
             public void onResponse(Object o) {
                 Log.d(Config.TAG, "sucess:" + o.toString());
+            }
+        });
+        SocketIOStreamer.getInstance(SocketIOStreamer.class).setOnAudioRecordCallback(new SocketIOStreamer.SocketIOEventCallback() {
+            @Override
+            public void onCall(String receive) {
+                Log.d(Config.TAG, "recieve:" + receive);
+            }
+
+            @Override
+            public void onEmit(HashMap<String, Object> emitted) {
+                Log.d(Config.TAG, "emitted:" + emitted);
             }
         });
     }
