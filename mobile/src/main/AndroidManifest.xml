@@ -21,7 +21,6 @@
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -31,6 +30,11 @@
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <!-- [scheme]://[host]/[path]のURLになる -->
+                <!-- この場合 battle7://twitterInfo/ になる -->
+                <data android:scheme="battle7" android:host="twitterInfo" />
             </intent-filter>
         </activity>
         <activity
