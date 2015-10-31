@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -32,80 +33,21 @@ import java.util.UUID;
 public class PlayingActivity extends AppCompatActivity {
 
     private BluetoothAdapter mBluetoothAdapter;
-    private ArrayList<BluetoothDevice> deviceList;
     private ArrayAdapter mDeviceAdapter;
-    private BluetoothBroadcastReceiver mReceiver;
     private String st = null;
     private RequestQueue mQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.bluetooth_view);
+        setContentView(R.layout.playing_view);
 
-        deviceList = new ArrayList<BluetoothDevice>();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         mDeviceAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mBluetoothAdapter.enable();
-        mReceiver = new BluetoothBroadcastReceiver();
-        mReceiver.setOnReceiveCallback(new BluetoothBroadcastReceiver.ReceiveCallback() {
-            @Override
-            public void onDiscoveryStart() {
-                Log.d(Config.TAG, "scanStart");
-            }
-
-            @Override
-            public void onDiscoverFinished(ArrayList<BluetoothDevice> foundDevices) {
-                showDeviceList(foundDevices);
-                Log.d(Config.TAG, "scanFinish");
-            }
-
-            @Override
-            public void onDeviceFound(BluetoothDevice device) {
-                ArrayList list = new ArrayList();
-                list.add(device);
-                showDeviceList(list);
-                Log.d(Config.TAG, "found");
-            }
-
-            @Override
-            public void onDeviceChanged(BluetoothDevice device) {
-                ArrayList list = new ArrayList();
-                list.add(device);
-                showDeviceList(list);
-                Log.d(Config.TAG, "changed");
-            }
-        });
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
-        filter.addAction(BluetoothDevice.ACTION_FOUND);
-        filter.addAction(BluetoothDevice.ACTION_NAME_CHANGED);
-        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-        registerReceiver(mReceiver, filter);
-
-        showDeviceList(mBluetoothAdapter.getBondedDevices());
-        Button serach = (Button) findViewById(R.id.searchDevicebutton);
-        serach.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mBluetoothAdapter.isDiscovering()) {
-                    //検索中の場合は検出をキャンセルする
-                    mBluetoothAdapter.cancelDiscovery();
-                }
-                //デバイスを検索する
-                //一定時間の間検出を行う
-                mBluetoothAdapter.startDiscovery();
-            }
-        });
-
-        Button sendDataButton = (Button) findViewById(R.id.sendDataButton);
-        sendDataButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                BluetoothClientThread.getInstance(BluetoothClientThread.class).sendData("testest".getBytes());
-            }
-        });
 
         BluetoothServerThread.getInstance(BluetoothServerThread.class).setOnAudioRecordCallback(new BluetoothServerThread.ServerReceiveCallback() {
             @Override
@@ -184,34 +126,9 @@ public class PlayingActivity extends AppCompatActivity {
             }
         });
 
-        ListView deviceListView = (ListView) findViewById(R.id.deviceList);
-        deviceListView.setAdapter(mDeviceAdapter);
-        deviceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View child, int position, long id) {
-                Log.d(Config.TAG, deviceList.get(position).getName() + " : " + deviceList.get(position).getAddress());
-                if (mBluetoothAdapter.isDiscovering()) {
-                    //検索中の場合は検出をキャンセルする
-                    mBluetoothAdapter.cancelDiscovery();
-                }
-                BluetoothClientThread.getInstance(BluetoothClientThread.class).startConnection(deviceList.get(position));
-            }
-        });
+        ListView tweetTimelineList = (ListView) findViewById(R.id.tweetTimelineList);
+        tweetTimelineList.setAdapter(mDeviceAdapter);
 
-        Button scan = (Button) findViewById(R.id.scanDeviceButton);
-        scan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-                startActivity(discoverableIntent);
-            }
-        });
-        if (mBluetoothAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-            scan.setVisibility(View.VISIBLE);
-        }else{
-            scan.setVisibility(View.INVISIBLE);
-        }
         mQueue = Volley.newRequestQueue(this);
 
         HashMap<String, Object> params = new HashMap<String, Object>();
@@ -241,20 +158,6 @@ public class PlayingActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mBluetoothAdapter.isDiscovering()) {
-            //検索中の場合は検出をキャンセルする
-            mBluetoothAdapter.cancelDiscovery();
-        }
-        unregisterReceiver(mReceiver);
-    }
-
-    private void showDeviceList(Collection<BluetoothDevice> devices){
-        deviceList.removeAll(devices);
-        deviceList.addAll(devices);
-        mDeviceAdapter.clear();
-        for(BluetoothDevice device : deviceList){
-            mDeviceAdapter.add(device.getName() + " : " + device.getAddress());
-        }
     }
 
     @Override
