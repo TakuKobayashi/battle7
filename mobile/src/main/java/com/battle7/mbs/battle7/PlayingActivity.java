@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -137,8 +138,9 @@ public class PlayingActivity extends AppCompatActivity {
                           scoreText.setText(getString(R.string.score, score));
                         }
                       });
+                      SharedPreferences sp = Preferences.getCommonPreferences(this);
                       HashMap<String, Object> params = new HashMap<String, Object>();
-                      params.put("userId", UUID.randomUUID().toString());
+                      params.put("userId", sp.getString("userId", null));
                       params.put("timestamp", String.valueOf(System.currentTimeMillis()));
                       params.put("length", "1");
                       params.put("total", POINT);

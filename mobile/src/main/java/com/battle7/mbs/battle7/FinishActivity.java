@@ -1,40 +1,20 @@
 package com.battle7.mbs.battle7;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
-import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
 import android.widget.ImageView;
 
-import java.util.UUID;
-
-public class SprashActivity extends AppCompatActivity {
-    private static final int START_SCREEN_DISPLAY_TIME = 1000; // Millisecond
-
+public class FinishActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(ExtraLayout.getParenetView(this, R.layout.sprash_view));
-
-        ImageView image = (ImageView) findViewById(R.id.sprashImage);
-        image.setImageResource(R.mipmap.gundom_bg);
-
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        bluetoothAdapter.enable();
-        SharedPreferences sp = Preferences.getCommonPreferences(this);
-        if(sp.getString("userId", null) == null) {
-            Preferences.saveCommonParam(this, "userId", UUID.randomUUID().toString());
-        }
-        scesuleNextActivity();
     }
 
     @Override
@@ -69,7 +49,7 @@ public class SprashActivity extends AppCompatActivity {
             @Override
             public boolean handleMessage(Message msg) {
                 //次のactivityを実行
-                Intent intent = new Intent(SprashActivity.this, MainActivity.class);
+                Intent intent = new Intent(FinishActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
                 return true;
