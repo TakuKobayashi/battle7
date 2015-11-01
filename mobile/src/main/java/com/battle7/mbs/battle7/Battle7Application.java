@@ -14,6 +14,8 @@ public class Battle7Application extends Application {
 		BluetoothClientThread.getInstance(BluetoothClientThread.class).init(this);
 		BluetoothServerThread.getInstance(BluetoothServerThread.class).init(this);
 		BluetoothServerThread.getInstance(BluetoothServerThread.class).startServer();
+		AsynkImageLoadThread.getInstance(AsynkImageLoadThread.class).init(this);
+		AsynkImageLoadThread.getInstance(AsynkImageLoadThread.class).startThread();
 	}
 
 	@Override
