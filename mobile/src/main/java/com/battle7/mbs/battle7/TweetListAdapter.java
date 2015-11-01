@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class TweetListAdapter extends BaseAdapter {
 	private Activity mActivity;
@@ -39,7 +40,11 @@ public class TweetListAdapter extends BaseAdapter {
 	}
 
 	public void addTwitterInfo(TwitterInfo info){
-		mTweetList.add(info);
+		ArrayList list = new ArrayList<TwitterInfo>();
+		list.add(info);
+		list.addAll(mTweetList);
+		mTweetList.clear();
+		mTweetList = list;
 		notifyDataSetChanged();
 	}
 
