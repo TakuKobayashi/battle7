@@ -18,6 +18,7 @@ public class FinishActivity extends AppCompatActivity {
         setContentView(ExtraLayout.getParenetView(this, R.layout.finish_view));
 
         WebView webView = (WebView) findViewById(R.id.finishWebView);
+        webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl(Config.ROOT_URL);
     }
 
