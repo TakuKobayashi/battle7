@@ -8,13 +8,17 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
 import android.widget.ImageView;
 
 public class FinishActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(ExtraLayout.getParenetView(this, R.layout.sprash_view));
+        setContentView(ExtraLayout.getParenetView(this, R.layout.finish_view));
+
+        WebView webView = (WebView) findViewById(R.id.finishWebView);
+        webView.loadUrl(Config.ROOT_URL);
     }
 
     @Override
@@ -44,23 +48,10 @@ public class FinishActivity extends AppCompatActivity {
         super.onStart();
     }
 
-    private void scesuleNextActivity(){
-        Handler handler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message msg) {
-                //次のactivityを実行
-                Intent intent = new Intent(FinishActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-                return true;
-            }
-        });
-        handler.sendEmptyMessageDelayed(0, START_SCREEN_DISPLAY_TIME);
-    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ApplicationHelper.releaseImageView((ImageView) findViewById(R.id.sprashImage));
+        ApplicationHelper.releaseWebView((WebView) findViewById(R.id.finishWebView));
     }
 }
