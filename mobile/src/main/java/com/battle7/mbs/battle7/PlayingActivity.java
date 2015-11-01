@@ -43,6 +43,7 @@ public class PlayingActivity extends AppCompatActivity {
     private TextView scoreText;
     private static final long VIDEO_TIME = 112000;
     private int score = 0;
+    private BluetoothClientThread mBlutoothClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +106,9 @@ public class PlayingActivity extends AppCompatActivity {
             }
         });
 
-        BluetoothClientThread.getInstance(BluetoothClientThread.class).setOnClientCallback(new BluetoothClientThread.ClientReceiveCallback() {
+        mBlutoothClient = BluetoothClientThread.getInstance(BluetoothClientThread.class);
+
+        mBlutoothClient.setOnClientCallback(new BluetoothClientThread.ClientReceiveCallback() {
             @Override
             public void onTryConnection() {
                 Log.d(Config.TAG, "client tryConnection");
@@ -140,6 +143,7 @@ public class PlayingActivity extends AppCompatActivity {
                 }
             }
         });
+        mBlutoothClient.sendData("START1;".getBytes());
 
         ListView tweetTimelineList = (ListView) findViewById(R.id.tweetTimelineList);
         tweetTimelineList.setAdapter(tweetAdapter);

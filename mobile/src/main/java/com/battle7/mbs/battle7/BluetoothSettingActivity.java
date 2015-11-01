@@ -103,14 +103,14 @@ public class BluetoothSettingActivity extends AppCompatActivity {
             @Override
             public void onTryConnection() {
                 Log.d(Config.TAG, "client tryConnection");
+                Intent intent = new Intent(BluetoothSettingActivity.this, PlayingActivity.class);
+                startActivity(intent);
+                finish();
             }
 
             @Override
             public void onConnectionSuccess() {
                 Log.d(Config.TAG, "client connection success");
-                Intent intent = new Intent(BluetoothSettingActivity.this, PlayingActivity.class);
-                startActivity(intent);
-                finish();
             }
 
             @Override
