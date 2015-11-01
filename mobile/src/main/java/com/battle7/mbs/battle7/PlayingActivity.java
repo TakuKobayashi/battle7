@@ -44,7 +44,7 @@ public class PlayingActivity extends AppCompatActivity {
     private TweetListAdapter tweetAdapter;
     private ProgressBar mCheerBar;
     private TextView scoreText;
-    private static final long VIDEO_TIME = 112000;
+    private static final long VIDEO_TIME = 79130;
     private int score = 0;
     private BluetoothClientThread mBlutoothClient;
     private static final int POINT = 10;
@@ -187,8 +187,7 @@ public class PlayingActivity extends AppCompatActivity {
                 finish();
             }
         };
-        //time.schedule(task, VIDEO_TIME);
-        time.schedule(task, 0);
+        time.schedule(task, VIDEO_TIME);
         /*
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("userId", UUID.randomUUID().toString());
@@ -224,6 +223,9 @@ public class PlayingActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         tweetAdapter.release();
+        SocketIOStreamer.getInstance(SocketIOStreamer.class).disConnect();
+        BluetoothServerThread.getInstance(BluetoothServerThread.class).stopServer();
+        BluetoothClientThread.getInstance(BluetoothClientThread.class).stopClient();
     }
 
     @Override
@@ -263,4 +265,5 @@ public class PlayingActivity extends AppCompatActivity {
         };
         mQueue.add(request);
     }
+
 }

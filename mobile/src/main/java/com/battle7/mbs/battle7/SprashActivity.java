@@ -69,7 +69,7 @@ public class SprashActivity extends AppCompatActivity {
             @Override
             public boolean handleMessage(Message msg) {
                 //次のactivityを実行
-                Intent intent = new Intent(SprashActivity.this, MainActivity.class);
+                Intent intent = new Intent(SprashActivity.this, BluetoothSettingActivity.class);
                 startActivity(intent);
                 finish();
                 return true;
