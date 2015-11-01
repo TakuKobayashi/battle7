@@ -7,19 +7,21 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AsynkImageLoadThread extends ContextSingletonBase<AsynkImageLoadThread> {
     private boolean bIsThreadActive;
     private LoadCallback mCallback;
-    private ArrayList<String> urlQueue;
-    private ArrayList<Bitmap> imageQueue;
+    private HashMap<Integer, String> urlQueue;
+    private HashMap<Integer, Bitmap> imageQueue;
     private Handler mHandler;
 
     public void init(Context context) {
         super.init(context);
-        urlQueue = new ArrayList<String>();
+        urlQueue = new HashMap<Integer, String>();
         mHandler = new Handler();
-        imageQueue = new ArrayList<Bitmap>();
+        imageQueue = new HashMap<Integer, Bitmap>();
     }
 
     public void startThread() {
@@ -29,15 +31,15 @@ public class AsynkImageLoadThread extends ContextSingletonBase<AsynkImageLoadThr
             public void run() {
                 while (bIsThreadActive) {
                     if(!urlQueue.isEmpty()) {
-                        for (int i = 0; i < urlQueue.size(); ++i) {
-                            Bitmap bmp = ApplicationHelper.downloadImage(urlQueue.get(i));
-                            imageQueue.add(bmp);
+                        for (Map.Entry<Integer, String> e : urlQueue.entrySet()) {
+                            Bitmap bmp = ApplicationHelper.downloadImage(e.getValue());
+                            imageQueue.put(e.getKey(), bmp);
                         }
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                for(int i = 0;i < imageQueue.size();++i) {
-                                    if (mCallback != null) mCallback.onLoad(imageQueue.get(i));
+                                for (Map.Entry<Integer, Bitmap> e : imageQueue.entrySet()) {
+                                    if (mCallback != null) mCallback.onLoad(e.getKey(), e.getValue());
                                 }
                                 imageQueue.clear();
                             }
@@ -50,8 +52,8 @@ public class AsynkImageLoadThread extends ContextSingletonBase<AsynkImageLoadThr
         thread.start();
     }
 
-    public void setImageQueue(String url){
-        urlQueue.add(url);
+    public void setImageQueue(int id,String url){
+        urlQueue.put(id, url);
     }
 
     public void stopServer() {
@@ -73,7 +75,7 @@ public class AsynkImageLoadThread extends ContextSingletonBase<AsynkImageLoadThr
     }
 
     public interface LoadCallback{
-        public void onLoad(Bitmap bitmap);
+        public void onLoad(int id, Bitmap bitmap);
     }
 
     //デストラクタ

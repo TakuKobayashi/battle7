@@ -1,6 +1,7 @@
 package com.battle7.mbs.battle7;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
 import java.net.URISyntaxException;
@@ -19,9 +20,12 @@ import com.google.gson.Gson;
 public class SocketIOStreamer extends ContextSingletonBase<SocketIOStreamer> {
     private SocketIOEventCallback mCallback;
     private Socket mSocket;
+    private Object[] values;
+    private Handler mHandler;
 
     public void init(Context context) {
         super.init(context);
+        mHandler = new Handler();
         try {
             mSocket = IO.socket(Config.SOCKET_SERVER_ROOT_URL);
             mSocket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
@@ -73,11 +77,15 @@ public class SocketIOStreamer extends ContextSingletonBase<SocketIOStreamer> {
                 @Override
                 public void call(Object... arg0) {
                     Log.d(Config.TAG, "tweetInfo");
-                    Gson gson = new Gson();
-                    for(Object o : arg0){
-                        if(mCallback != null) mCallback.onCall(o.toString());
-                        Log.d(Config.TAG, "tweetInfo:" + o.toString());
-                    }
+                    values = arg0;
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            for(Object o : values){
+                                if(mCallback != null) mCallback.onCall(o.toString());
+                            }
+                        }
+                    });
                 }
             });
         } catch (URISyntaxException e) {

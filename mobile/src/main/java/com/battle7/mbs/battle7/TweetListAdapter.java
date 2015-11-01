@@ -25,32 +25,22 @@ public class TweetListAdapter extends BaseAdapter {
 		mUserImageList = new ArrayList<ImageView>();
 		mImageList = new ArrayList<Bitmap>();
 		mHandler = new Handler();
+		AsynkImageLoadThread.getInstance(AsynkImageLoadThread.class).setOnAudioRecordCallback(new AsynkImageLoadThread.LoadCallback() {
+			@Override
+			public void onLoad(int id, Bitmap bitmap) {
+				mUserImageList.get(id).setImageBitmap(bitmap);
+			}
+		});
 	}
 
 	public void loadImage(int position){
 		mPosition = position;
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				mImageList.add(ApplicationHelper.downloadImage(mTweetList.get(mPosition).profile_image_url));
-				mHandler.post(new Runnable() {
-					@Override
-					public void run() {
-						mUserImageList.get(mPosition).setImageBitmap(mImageList.get(mPosition));
-					}
-				});
-			}
-		}).start();
+		AsynkImageLoadThread.getInstance(AsynkImageLoadThread.class).setImageQueue(position, mTweetList.get(mPosition).profile_image_url);
 	}
 
 	public void addTwitterInfo(TwitterInfo info){
 		mTweetList.add(info);
-		mHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				notifyDataSetChanged();
-			}
-		});
+		notifyDataSetChanged();
 	}
 
 	@Override
