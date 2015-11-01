@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -39,7 +40,9 @@ public class PlayingActivity extends AppCompatActivity {
     private RequestQueue mQueue;
     private TweetListAdapter tweetAdapter;
     private ProgressBar mCheerBar;
+    private TextView scoreText;
     private static final long VIDEO_TIME = 112000;
+    private int score = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,9 @@ public class PlayingActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        scoreText = (TextView) findViewById(R.id.scoreText);
+        scoreText.setText(getString(R.string.score, score));
+
         tweetAdapter = new TweetListAdapter(this);
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -55,6 +61,8 @@ public class PlayingActivity extends AppCompatActivity {
 
         mCheerBar = (ProgressBar) findViewById(R.id.cheerBar);
         mCheerBar.setMax(100);
+
+        ((TextView) findViewById(R.id.reviveText)).setText(String.valueOf(mCheerBar.getProgress()));
 
         BluetoothServerThread.getInstance(BluetoothServerThread.class).setOnAudioRecordCallback(new BluetoothServerThread.ServerReceiveCallback() {
             @Override
@@ -159,6 +167,7 @@ public class PlayingActivity extends AppCompatActivity {
                 TwitterInfo twitterInfo = gson.fromJson(receive, TwitterInfo.class);
                 tweetAdapter.addTwitterInfo(twitterInfo);
                 mCheerBar.setProgress(mCheerBar.getProgress() + 10);
+                ((TextView) findViewById(R.id.reviveText)).setText(String.valueOf(mCheerBar.getProgress()));
             }
 
             @Override

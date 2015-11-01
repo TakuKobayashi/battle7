@@ -12,27 +12,42 @@
     <TextView
         android:id="@+id/scoreText"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textSize="20dp"/>
 
     <ListView
         android:id="@+id/tweetTimelineList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/scoreText"
-        android:layout_above="@+id/cheerBar"/>
+        android:layout_above="@+id/bottomLayout" />
 
-    <ProgressBar
-        android:id="@+id/cheerBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/resurrectionButton"/>
-
-    <Button
-        android:id="@+id/resurrectionButton"
+    <RelativeLayout
+        android:id="@+id/bottomLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/resurrectionButtonText"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true">
+
+        <ProgressBar
+            android:id="@+id/cheerBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/resurrectionButton"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_toLeftOf="@+id/reviveText"/>
+
+        <TextView
+            android:id="@+id/reviveText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/resurrectionButton"/>
+
+        <Button
+            android:id="@+id/resurrectionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/resurrectionButtonText"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true" />
+    </RelativeLayout>
 </RelativeLayout>
