@@ -57,7 +57,6 @@ public class SocketIOStreamer extends ContextSingletonBase<SocketIOStreamer> {
                     Log.d(Config.TAG, "message!!");
                     for(Object o : arg0){
                         Log.d(Config.TAG, "message:" + o.toString());
-                        mCallback.onCall(o.toString());
                     }
                 }
             });
@@ -76,7 +75,7 @@ public class SocketIOStreamer extends ContextSingletonBase<SocketIOStreamer> {
                     Log.d(Config.TAG, "tweetInfo");
                     Gson gson = new Gson();
                     for(Object o : arg0){
-                        TwitterInfo twitterInfo = gson.fromJson(o.toString(), TwitterInfo.class);
+                        if(mCallback != null) mCallback.onCall(o.toString());
                         Log.d(Config.TAG, "tweetInfo:" + o.toString());
                     }
                 }

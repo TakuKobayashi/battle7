@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Build;
@@ -13,6 +15,9 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
@@ -138,5 +143,22 @@ public class ApplicationHelper {
 	public static void showToast(Context con, String message) {
 		Toast toast = Toast.makeText(con, message, Toast.LENGTH_LONG);
 		toast.show();
+	}
+
+	public static Bitmap downloadImage(String url){
+		Bitmap oBmp = null;
+		try {
+			//画像のURLを直うち
+			URL u = new URL(url);
+			//インプットストリームで画像を読み込む
+			InputStream istream = u.openStream();
+			//読み込んだファイルをビットマップに変換
+			oBmp = BitmapFactory.decodeStream(istream);
+			//インプットストリームを閉じる
+			istream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return oBmp;
 	}
 }

@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,6 +23,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -33,9 +35,11 @@ import java.util.UUID;
 public class PlayingActivity extends AppCompatActivity {
 
     private BluetoothAdapter mBluetoothAdapter;
-    private ArrayAdapter mDeviceAdapter;
     private String st = null;
     private RequestQueue mQueue;
+    private TweetListAdapter tweetAdapter;
+    private ProgressBar mCheerBar;
+    private static final long VIDEO_TIME = 112000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +48,13 @@ public class PlayingActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        mDeviceAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
+        tweetAdapter = new TweetListAdapter(this);
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mBluetoothAdapter.enable();
+
+        mCheerBar = (ProgressBar) findViewById(R.id.cheerBar);
+        mCheerBar.setMax(100);
 
         BluetoothServerThread.getInstance(BluetoothServerThread.class).setOnAudioRecordCallback(new BluetoothServerThread.ServerReceiveCallback() {
             @Override
@@ -127,25 +134,31 @@ public class PlayingActivity extends AppCompatActivity {
         });
 
         ListView tweetTimelineList = (ListView) findViewById(R.id.tweetTimelineList);
-        tweetTimelineList.setAdapter(mDeviceAdapter);
+        tweetTimelineList.setAdapter(tweetAdapter);
 
         mQueue = Volley.newRequestQueue(this);
 
+        /*
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("userId", UUID.randomUUID().toString());
         params.put("timestamp", String.valueOf(System.currentTimeMillis()));
         params.put("length", "1");
         params.put("total", "3");
+
         httpRequest(Request.Method.POST, Config.ROOT_URL + "score?" + ApplicationHelper.makeUrlParams(params), null, new Response.Listener() {
             @Override
             public void onResponse(Object o) {
                 Log.d(Config.TAG, "sucess:" + o.toString());
             }
         });
+        */
         SocketIOStreamer.getInstance(SocketIOStreamer.class).setOnAudioRecordCallback(new SocketIOStreamer.SocketIOEventCallback() {
             @Override
             public void onCall(String receive) {
-                Log.d(Config.TAG, "recieve:" + receive);
+                Gson gson = new Gson();
+                TwitterInfo twitterInfo = gson.fromJson(receive, TwitterInfo.class);
+                tweetAdapter.addTwitterInfo(twitterInfo);
+                mCheerBar.setProgress(mCheerBar.getProgress() + 10);
             }
 
             @Override
@@ -158,6 +171,7 @@ public class PlayingActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        tweetAdapter.release();
     }
 
     @Override
