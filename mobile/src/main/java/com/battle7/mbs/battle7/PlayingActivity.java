@@ -47,6 +47,7 @@ public class PlayingActivity extends AppCompatActivity {
     private static final long VIDEO_TIME = 79130;
     private int score = 0;
     private BluetoothClientThread mBlutoothClient;
+    private Button reviveButton;
     private static final int POINT = 10;
     private static final String TRIGER = "RIGE";
     private static final String ON = "ON";
@@ -68,6 +69,17 @@ public class PlayingActivity extends AppCompatActivity {
 
         mCheerBar = (ProgressBar) findViewById(R.id.cheerBar);
         mCheerBar.setMax(100);
+
+        reviveButton = (Button) findViewById(R.id.resurrectionButton);
+        reviveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reviveButton.setVisibility(View.INVISIBLE);
+                mCheerBar.setProgress(0);
+                ((TextView) findViewById(R.id.reviveText)).setText(String.valueOf(mCheerBar.getProgress()));
+            }
+        });
+        reviveButton.setVisibility(View.INVISIBLE);
 
         ((TextView) findViewById(R.id.reviveText)).setText(String.valueOf(mCheerBar.getProgress()));
 
@@ -210,6 +222,9 @@ public class PlayingActivity extends AppCompatActivity {
                 tweetAdapter.addTwitterInfo(twitterInfo);
                 mCheerBar.setProgress(mCheerBar.getProgress() + 10);
                 ((TextView) findViewById(R.id.reviveText)).setText(String.valueOf(mCheerBar.getProgress()));
+                if(mCheerBar.getMax() <= mCheerBar.getProgress()){
+                    reviveButton.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
