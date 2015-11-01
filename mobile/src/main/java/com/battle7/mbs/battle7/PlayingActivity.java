@@ -44,6 +44,9 @@ public class PlayingActivity extends AppCompatActivity {
     private static final long VIDEO_TIME = 112000;
     private int score = 0;
     private BluetoothClientThread mBlutoothClient;
+    private static final int POINT = 10;
+    private static final String TRIGER = "RIGE";
+    private static final String ON = "ON";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +128,27 @@ public class PlayingActivity extends AppCompatActivity {
                 try {
                     st = new String(data, "UTF-8");
                     Log.d(Config.TAG, "client bytes:" + bytes + " st:" + st);
+                    if(st.contains(TRIGER) && st.contains(ON)){
+                      Log.d(Config.TAG, "sucess:" + score);
+                      score += POINT;
+                      runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                          scoreText.setText(getString(R.string.score, score));
+                        }
+                      });
+                      HashMap<String, Object> params = new HashMap<String, Object>();
+                      params.put("userId", UUID.randomUUID().toString());
+                      params.put("timestamp", String.valueOf(System.currentTimeMillis()));
+                      params.put("length", "1");
+                      params.put("total", POINT);
+                      httpRequest(Request.Method.POST, Config.ROOT_URL + "score?" + ApplicationHelper.makeUrlParams(params), null, new Response.Listener() {
+                        @Override
+                        public void onResponse(Object o) {
+                        }
+                      });
+                    }
+                    Log.d(Config.TAG,"st:" + st);
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                     Log.d(Config.TAG, "client bytes:" + bytes + " error:" + e.getMessage());
