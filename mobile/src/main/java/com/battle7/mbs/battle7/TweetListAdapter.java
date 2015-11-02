@@ -9,34 +9,27 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
+import com.android.volley.toolbox.Volley;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TweetListAdapter extends BaseAdapter {
 	private Activity mActivity;
 	private ArrayList<TwitterInfo> mTweetList;
-	private ArrayList<ImageView> mUserImageList;
-	private ArrayList<Bitmap> mImageList;
-	private Handler mHandler;
-	private int mPosition = 0;
+	private HashMap<String, Bitmap> mImageList;
+	private RequestQueue mQueue;
 
 	public TweetListAdapter(Activity act){
 		mActivity = act;
+		mQueue = Volley.newRequestQueue(mActivity);
 		mTweetList = new ArrayList<TwitterInfo>();
-		mUserImageList = new ArrayList<ImageView>();
-		mImageList = new ArrayList<Bitmap>();
-		mHandler = new Handler();
-		AsynkImageLoadThread.getInstance(AsynkImageLoadThread.class).setOnAudioRecordCallback(new AsynkImageLoadThread.LoadCallback() {
-			@Override
-			public void onLoad(int id, Bitmap bitmap) {
-				mUserImageList.get(id).setImageBitmap(bitmap);
-			}
-		});
-	}
-
-	public void loadImage(int position){
-		mPosition = position;
-		AsynkImageLoadThread.getInstance(AsynkImageLoadThread.class).setImageQueue(position, mTweetList.get(mPosition).profile_image_url);
+		mImageList = new HashMap<String, Bitmap>();
 	}
 
 	public void addTwitterInfo(TwitterInfo info){
@@ -70,20 +63,26 @@ public class TweetListAdapter extends BaseAdapter {
 		userName.setText(mTweetList.get(position).user_name);
 		TextView tweet = (TextView) convertView.findViewById(R.id.txt_tweet);
 		tweet.setText(mTweetList.get(position).tweet);
-		ImageView imageView = (ImageView) convertView.findViewById(R.id.img_user);
-		mUserImageList.add(imageView);
-		loadImage(position);
+		NetworkImageView imageView = (NetworkImageView) convertView.findViewById(R.id.img_user);
+		imageView.setImageUrl(mTweetList.get(position).profile_image_url, new ImageLoader(mQueue, new ImageLoader.ImageCache() {
+			@Override
+			public Bitmap getBitmap(String s) {
+				return mImageList.get(s);
+			}
+
+			@Override
+			public void putBitmap(String s, Bitmap bitmap) {
+				mImageList.put(s, bitmap);
+			}
+		}));
 		return convertView;
 	}
 
 	public void release(){
-		for(Bitmap bmp : mImageList){
-			bmp.recycle();
-			bmp = null;
+		for(Map.Entry<String, Bitmap> e : mImageList.entrySet()){
+			e.getValue().recycle();
 		}
-		for(ImageView im : mUserImageList){
-			ApplicationHelper.releaseImageView(im);
-		}
+		mImageList.clear();
 		mTweetList.clear();
 	}
 }
