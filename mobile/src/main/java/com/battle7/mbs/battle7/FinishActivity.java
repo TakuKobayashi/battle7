@@ -15,7 +15,7 @@ public class FinishActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(ExtraLayout.getParenetView(this, R.layout.finish_view));
+        setContentView(ExtraLayout.getInstance(ExtraLayout.class).getParenetView(R.layout.finish_view));
 
         WebView webView = (WebView) findViewById(R.id.finishWebView);
         webView.getSettings().setJavaScriptEnabled(true);

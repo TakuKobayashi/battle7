@@ -17,6 +17,7 @@ public class Battle7Application extends Application {
 		AsynkImageLoadThread.getInstance(AsynkImageLoadThread.class).init(this);
 		AsynkImageLoadThread.getInstance(AsynkImageLoadThread.class).startThread();
 		GameLogicCalucurator.getInstance(GameLogicCalucurator.class).init(this);
+		ExtraLayout.getInstance(ExtraLayout.class).init(this);
 	}
 
 	@Override

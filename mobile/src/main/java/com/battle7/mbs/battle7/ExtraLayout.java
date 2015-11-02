@@ -1,11 +1,13 @@
 package com.battle7.mbs.battle7;
 
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,26 +20,31 @@ import android.graphics.LightingColorFilter;
 import android.graphics.Point;
 import android.graphics.Rect;
 
-public class ExtraLayout {
+public class ExtraLayout extends ContextSingletonBase<ExtraLayout>{
 
   private static final float BASE_DISPLAY_WIDTH = 1080;
   private static final float BASE_DISPLAY_HEIGHT = 1920;
   private static final float BASE_ASPECT_RATIO = BASE_DISPLAY_WIDTH / BASE_DISPLAY_HEIGHT;
 
-  private static Point getDisplayMetrics(Activity activity){
-    Display display = activity.getWindowManager().getDefaultDisplay();
+  public void init(Context context) {
+    super.init(context);
+  }
+
+  public Point getDisplayMetrics(){
+    WindowManager wm = (WindowManager) context.getSystemService( Context.WINDOW_SERVICE );
+    Display display = wm.getDefaultDisplay();
     Point point = new Point();
     display.getSize(point);
     return point;
   }
 
   //端末の解像度を取得
-  public static Rect getDisplaySize(Activity activity){
-    Point point = getDisplayMetrics(activity);
+  public Rect getDisplaySize(){
+    Point point = getDisplayMetrics();
     return new Rect(0, 0, point.x, point.y);
   }
 
-  public static Rect getImageSize(Context context, Integer resId) {
+  public Rect getImageSize(Integer resId) {
     BitmapFactory.Options options = new BitmapFactory.Options();
     options.inJustDecodeBounds = true;
     options.inScaled = false;
@@ -45,21 +52,21 @@ public class ExtraLayout {
     return new Rect(0, 0, options.outWidth, options.outHeight);
   }
 
-  public static Rect getImageResize(Activity activity, Integer resId) {
-    Rect size = ExtraLayout.getImageSize(activity, resId);
+  public Rect getImageResize(Integer resId) {
+    Rect size = getImageSize(resId);
     //iphoneの解像度で使用しているしている画像をAndroidの解像度に合わせたサイズで表示させるための計算
-    return new Rect(0,0, (int)((float)size.width() * getResizeRatio(activity)), (int)((float)size.height() * getResizeRatio(activity)));
+    return new Rect(0,0, (int)((float)size.width() * getResizeRatio()), (int)((float)size.height() * getResizeRatio()));
   }
 
-  public static void setBaseImageView(Activity act,ImageView imageView,Integer res){
-    Rect imageSize = ExtraLayout.getImageResize(act, res);
+  public void setBaseImageView(ImageView imageView,Integer res){
+    Rect imageSize = getImageResize(res);
     imageView.getLayoutParams().width = imageSize.width();
     imageView.getLayoutParams().height = imageSize.height();
     imageView.setImageResource(res);
   }
 
-  public static Rect getDisplayResize(Activity activity) {
-    Rect displaySize = getDisplaySize(activity);
+  public Rect getDisplayResize() {
+    Rect displaySize = getDisplaySize();
     float aspectRatio = ((float) displaySize.width()) / displaySize.height();
     int width = 0;
     int height = 0;
@@ -79,8 +86,8 @@ public class ExtraLayout {
     return new Rect(0, 0, width, height);
   }
 
-  public static Rect getDisplayFullScreenResize(Activity activity) {
-    Rect displaySize = getDisplaySize(activity);
+  public Rect getDisplayFullScreenResize() {
+    Rect displaySize = getDisplaySize();
     float aspectRatio = ((float) displaySize.width()) / displaySize.height();
     int width = 0;
     int height = 0;
@@ -100,10 +107,10 @@ public class ExtraLayout {
     return new Rect(0, 0, width, height);
   }
 
-  public static float getResizeRatio(Activity activity) {
+  public float getResizeRatio() {
     //ipone版に合わせたサイズに計算する
     float sizeRatio = 0;
-    Rect displaySize = getDisplaySize(activity);
+    Rect displaySize = getDisplaySize();
     float aspectRatio = ((float) displaySize.width() / displaySize.height());
     // 縦長の解像度端末
     if (BASE_ASPECT_RATIO >= aspectRatio) {
@@ -114,29 +121,31 @@ public class ExtraLayout {
     return sizeRatio;
   }
 
-  public static View getParenetView(Activity act,Integer layoutID){
+  public View getParenetView(Integer layoutID){
     //レイアウトを作って返す
-    LinearLayout outSideLayout = new LinearLayout(act);
+    LinearLayout outSideLayout = new LinearLayout(context);
     outSideLayout.setGravity(Gravity.CENTER);
-    View view = act.getLayoutInflater().inflate(layoutID, null);
-    Rect disp = getDisplayResize(act);
+    LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    View view = inflater.inflate(layoutID, null);
+    Rect disp = getDisplayResize();
     view.setLayoutParams(new LayoutParams(disp.width(),disp.height()));
     outSideLayout.addView(view);
     return outSideLayout;
   }
 
-  public static View getParenetViewWithBackgroundImage(Activity act,Integer layoutID, ImageView image){
+  public View getParenetViewWithBackgroundImage(Integer layoutID, ImageView image){
     //レイアウトを作って返す
-    FrameLayout outSideLayout = new FrameLayout(act);
-    Rect disp = getDisplayResize(act);
+    FrameLayout outSideLayout = new FrameLayout(context);
+    Rect disp = getDisplayResize();
     outSideLayout.addView(image);
-    View view = act.getLayoutInflater().inflate(layoutID, null);
+    LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    View view = inflater.inflate(layoutID, null);
     view.setLayoutParams(new FrameLayout.LayoutParams(disp.width(),disp.height(), Gravity.CENTER));
     outSideLayout.addView(view);
     return outSideLayout;
   }
 
-  public static OnTouchListener ImageTouchListener = new OnTouchListener() {
+  public OnTouchListener ImageTouchListener = new OnTouchListener() {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
       switch (event.getAction()) {
@@ -157,8 +166,8 @@ public class ExtraLayout {
     }
   };
 
-  public static Bitmap resizeBaseBitmap(Activity activity, Bitmap image){
-    float ratio = getResizeRatio(activity);
+  public Bitmap resizeBaseBitmap(Bitmap image){
+    float ratio = getResizeRatio();
     Bitmap resizedImage = Bitmap.createScaledBitmap(image, (int)(image.getWidth() * ratio),(int)(image.getHeight() * ratio), true);
     image.recycle();
     image = null;

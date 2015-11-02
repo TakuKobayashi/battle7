@@ -23,7 +23,7 @@ public class SprashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(ExtraLayout.getParenetView(this, R.layout.sprash_view));
+        setContentView(ExtraLayout.getInstance(ExtraLayout.class).getParenetView(R.layout.sprash_view));
 
         ImageView image = (ImageView) findViewById(R.id.sprashImage);
         image.setImageResource(R.mipmap.gundom_bg);
