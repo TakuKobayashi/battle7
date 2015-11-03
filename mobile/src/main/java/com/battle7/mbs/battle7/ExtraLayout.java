@@ -11,7 +11,6 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,12 +21,26 @@ import android.graphics.Rect;
 
 public class ExtraLayout extends ContextSingletonBase<ExtraLayout>{
 
-  private static final float BASE_DISPLAY_WIDTH = 1080;
-  private static final float BASE_DISPLAY_HEIGHT = 1920;
-  private static final float BASE_ASPECT_RATIO = BASE_DISPLAY_WIDTH / BASE_DISPLAY_HEIGHT;
+  //端末の解像度に合わせて、画像が端末からはみ出ないようにアスペクト比を維持して調整する
+  public static int DISPLAY_POLICY_SHOW_ALL = 0;
+  //端末の解像度に合わせて、画像が端末からはみ出ても真ん中に表示されるようにアスペクト比を維持して調整する
+  public static int DISPLAY_POLICY_EXACT_FIT = 1;
+  //特に調整をかけない
+  public static int DISPLAY_POLICY_NO_BORDER = 2;
+  private int mDisplayPolicy = DISPLAY_POLICY_SHOW_ALL;
+  private Rect mBaseDisplaySize;
 
   public void init(Context context) {
     super.init(context);
+    mBaseDisplaySize = getDisplaySize();
+  }
+
+  public void setBaseDisplaySize(int width, int height){
+    mBaseDisplaySize = new Rect(0,0,width, height);
+  }
+
+  public void setDisplayPolicy(int policy){
+    mDisplayPolicy = policy;
   }
 
   public Point getDisplayMetrics(){
@@ -70,35 +83,25 @@ public class ExtraLayout extends ContextSingletonBase<ExtraLayout>{
     float aspectRatio = ((float) displaySize.width()) / displaySize.height();
     int width = 0;
     int height = 0;
+    float baseAspectRatio = (float)((float)mBaseDisplaySize.width() / (float)mBaseDisplaySize.height());
 
     // 縦長の解像度端末
-    if (BASE_ASPECT_RATIO > aspectRatio) {
-      width = displaySize.width();
-      height = (int)(width * BASE_DISPLAY_HEIGHT / BASE_DISPLAY_WIDTH);
-    } else if (BASE_ASPECT_RATIO < aspectRatio) {
-      height = displaySize.height();
-      width = (int)(height * BASE_DISPLAY_WIDTH / BASE_DISPLAY_HEIGHT);
-    } else {
-      width = displaySize.width();
-      height = displaySize.height();
-    }
-
-    return new Rect(0, 0, width, height);
-  }
-
-  public Rect getDisplayFullScreenResize() {
-    Rect displaySize = getDisplaySize();
-    float aspectRatio = ((float) displaySize.width()) / displaySize.height();
-    int width = 0;
-    int height = 0;
-
-    // 縦長の解像度端末
-    if (BASE_ASPECT_RATIO > aspectRatio) {
-      height = displaySize.height();
-      width = (int)(height * BASE_DISPLAY_WIDTH / BASE_DISPLAY_HEIGHT);
-    } else if (BASE_ASPECT_RATIO < aspectRatio) {
-      width = displaySize.width();
-      height = (int)(width * BASE_DISPLAY_HEIGHT / BASE_DISPLAY_WIDTH);
+    if (baseAspectRatio > aspectRatio && (mDisplayPolicy == DISPLAY_POLICY_SHOW_ALL || mDisplayPolicy == DISPLAY_POLICY_EXACT_FIT)) {
+      if (mDisplayPolicy == DISPLAY_POLICY_SHOW_ALL) {
+        width = displaySize.width();
+        height = (int) (width * (float)((float)mBaseDisplaySize.height() / (float)mBaseDisplaySize.width()));
+      } else if (mDisplayPolicy == DISPLAY_POLICY_EXACT_FIT){
+        height = displaySize.height();
+        width = (int) (height * (float)((float)mBaseDisplaySize.width() / (float)mBaseDisplaySize.height()));
+      }
+    } else if (baseAspectRatio < aspectRatio && (mDisplayPolicy == DISPLAY_POLICY_SHOW_ALL || mDisplayPolicy == DISPLAY_POLICY_EXACT_FIT)) {
+      if(mDisplayPolicy == DISPLAY_POLICY_SHOW_ALL) {
+        height = displaySize.height();
+        width = (int) (height * (float)((float)mBaseDisplaySize.width() / (float)mBaseDisplaySize.height()));
+      } else if (mDisplayPolicy == DISPLAY_POLICY_EXACT_FIT){
+        width = displaySize.width();
+        height = (int) (width * (float)((float)mBaseDisplaySize.height() / (float)mBaseDisplaySize.width()));
+      }
     } else {
       width = displaySize.width();
       height = displaySize.height();
@@ -109,14 +112,23 @@ public class ExtraLayout extends ContextSingletonBase<ExtraLayout>{
 
   public float getResizeRatio() {
     //ipone版に合わせたサイズに計算する
-    float sizeRatio = 0;
+    float sizeRatio = 1;
     Rect displaySize = getDisplaySize();
     float aspectRatio = ((float) displaySize.width() / displaySize.height());
+    float baseAspectRatio = (float)((float)mBaseDisplaySize.width() / (float)mBaseDisplaySize.height());
     // 縦長の解像度端末
-    if (BASE_ASPECT_RATIO >= aspectRatio) {
-      sizeRatio = ((float)displaySize.width() / BASE_DISPLAY_WIDTH);
+    if (baseAspectRatio >= aspectRatio) {
+      if (mDisplayPolicy == DISPLAY_POLICY_SHOW_ALL) {
+        sizeRatio = ((float) displaySize.width() / (float)mBaseDisplaySize.width());
+      }else{
+        sizeRatio = ((float) displaySize.height() / (float)mBaseDisplaySize.height());
+      }
     } else {
-      sizeRatio = ((float) displaySize.height() / BASE_DISPLAY_HEIGHT);
+      if (mDisplayPolicy == DISPLAY_POLICY_SHOW_ALL) {
+        sizeRatio = ((float) displaySize.height() / (float)mBaseDisplaySize.height());
+      }else{
+        sizeRatio = ((float) displaySize.width() / (float)mBaseDisplaySize.width());
+      }
     }
     return sizeRatio;
   }

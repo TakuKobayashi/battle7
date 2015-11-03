@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import java.util.UUID;
@@ -23,6 +24,7 @@ public class SprashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(ExtraLayout.getInstance(ExtraLayout.class).getParenetView(R.layout.sprash_view));
 
         ImageView image = (ImageView) findViewById(R.id.sprashImage);

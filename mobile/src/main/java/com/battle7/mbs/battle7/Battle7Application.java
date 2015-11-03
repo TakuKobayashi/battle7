@@ -18,6 +18,7 @@ public class Battle7Application extends Application {
 		AsynkImageLoadThread.getInstance(AsynkImageLoadThread.class).startThread();
 		GameLogicCalucurator.getInstance(GameLogicCalucurator.class).init(this);
 		ExtraLayout.getInstance(ExtraLayout.class).init(this);
+		ExtraLayout.getInstance(ExtraLayout.class).setBaseDisplaySize(1080,1920);
 	}
 
 	@Override
